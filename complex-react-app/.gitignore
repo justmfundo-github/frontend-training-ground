@@ -1,0 +1,5 @@
+### VS Code ###
+.vscode/
+
+### React App ###
+node_modules
