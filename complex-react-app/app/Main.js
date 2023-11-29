@@ -1,5 +1,6 @@
 import React, { useState, useReducer } from "react";
 import ReactDOM from "react-dom/client";
+import { useImmerReducer } from "use-immer";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Axios from "axios";
 Axios.defaults.baseURL = "http://localhost:8080";
@@ -22,17 +23,23 @@ function Main() {
     loggedIn: Boolean(localStorage.getItem("complexappToken")),
     flashMessages: [],
   };
-  function ourReducer(state, action) {
+  function ourReducer(draft, action) {
     switch (action.type) {
       case "login":
-        return { loggedIn: true, flashMessages: state.flashMessages };
+        draft.loggedIn = true;
+        return;
+      //return { loggedIn: true, flashMessages: state.flashMessages };
       case "logout":
-        return { loggedIn: false, flashMessages: state.flashMessages };
+        draft.loggedIn = false;
+        return;
+      //return { loggedIn: false, flashMessages: state.flashMessages };
       case "flashMessage":
-        return { loggedIn: state.loggedIn, flashMessages: state.flashMessages.concat(action.value) };
+        draft.flashMessages.push(action.value);
+        return;
+      //return { loggedIn: state.loggedIn, flashMessages: state.flashMessages.concat(action.value) };
     }
   }
-  const [state, dispatch] = useReducer(ourReducer, initialState);
+  const [state, dispatch] = useImmerReducer(ourReducer, initialState);
 
   function addFlashMessage(msg) {
     setFlashMessages((prev) => prev.concat(msg));
