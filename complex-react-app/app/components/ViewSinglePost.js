@@ -10,16 +10,20 @@ function ViewSinglePost() {
   const [post, setPost] = useState();
 
   useEffect(() => {
+    const ourRequest = Axios.CancelToken.source();
     async function fetchPost() {
       try {
-        const response = await Axios.get(`/post/${id}`);
+        const response = await Axios.get(`/post/${id}`, { cancelToken: ourRequest.token });
         setPost(response.data);
         setIsLoading(false);
       } catch (e) {
-        console.log("There was a problem fetching this post..." + e);
+        console.log("There was a problem fetching this post...Or the request was cancelled" + e);
       }
     }
     fetchPost();
+    return () => {
+      ourRequest.cancel;
+    };
   }, []);
 
   if (isLoading) {

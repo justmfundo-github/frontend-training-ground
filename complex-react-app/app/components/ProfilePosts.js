@@ -9,9 +9,13 @@ function ProfilePosts() {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
+    const ourRequest = Axios.CancelToken.source(); // Use cancel token to avoid async request returning to a
+    //component that is no longer relevant, Ie. When a user clicks away from a page while it was still waiting
+    //on an async response
+
     async function fetchPosts() {
       try {
-        const response = await Axios.get(`/profile/${username}/posts`);
+        const response = await Axios.get(`/profile/${username}/posts`, { CancelToken: ourRequest.token });
         setPosts(response.data);
         setIsLoading(false);
       } catch (e) {
@@ -19,6 +23,9 @@ function ProfilePosts() {
       }
     }
     fetchPosts();
+    return () => {
+      ourRequest.cancel;
+    };
   }, []);
 
   if (isLoading) {
